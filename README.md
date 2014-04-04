@@ -1,0 +1,1 @@
+OSGi compatible repacking of camunda webapp and camunda rest application.
