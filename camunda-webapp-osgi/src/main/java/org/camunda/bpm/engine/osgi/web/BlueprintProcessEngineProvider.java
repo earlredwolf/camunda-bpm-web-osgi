@@ -11,25 +11,27 @@ public class BlueprintProcessEngineProvider implements ProcessEngineProvider {
 
     @Override
     public ProcessEngine getDefaultProcessEngine() {
-      return null;
-        //return BundleActivator.processEngine;
+        return BundleActivator.processEngine;
     }
 
     @Override
     public ProcessEngine getProcessEngine(String s) {
-        return null;
+        if (s.equals("default")){
+            return getDefaultProcessEngine();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Set<String> getProcessEngineNames() {
-//        if (BundleActivator.processEngine != null) {
-//            return new HashSet<String>() {{
-//                add("default");
-//            }};
-//        } else {
-//            return new HashSet<String>();
-//        }
-      return null;
+        if (BundleActivator.processEngine != null) {
+            return new HashSet<String>() {{
+                add("default");
+            }};
+        } else {
+            return new HashSet<String>();
+        }
 
     }
 }
