@@ -29,6 +29,7 @@
             <artifactId>camunda-engine-rest</artifactId>
             <version>${camunda-bpm.version}</version>
             <classifier>classes</classifier>
+            <scope>provided</scope>
         </dependency>
 
 
@@ -62,6 +63,7 @@
             <groupId>org.camunda.bpm.webapp</groupId>
             <artifactId>camunda-webapp-core</artifactId>
             <version>${camunda-bpm.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -146,6 +148,7 @@
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -165,7 +168,7 @@
                                     <type>war</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${project.build.directory}/unpacked-classes</outputDirectory>
-                                    <includes>WEB-INF/classes/**/*.*</includes>
+                                    <includes>WEB-INF/**/*.*</includes>
                                     <excludes>
                                         WEB-INF/classes/db.properties,WEB-INF/classes/logging.properties
                                     </excludes>
@@ -173,10 +176,22 @@
                             </artifactItems>
                             <outputDirectory>${project.build.directory}/unpacked-classes</outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
-                            !
                             <overWriteSnapshots>true</overWriteSnapshots>
                         </configuration>
                     </execution>
+                        <execution>
+                            <id>copy-additional-dependencies</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}/deps</outputDirectory>
+                                <overWriteReleases>false</overWriteReleases>
+                                <overWriteSnapshots>true</overWriteSnapshots>
+                                <includeScope>runtime</includeScope>
+                            </configuration>
+                        </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -229,18 +244,28 @@
                     </supportedProjectTypes>
                     <instructions>
                         <Bundle-Activator>org.camunda.bpm.engine.osgi.web.BundleActivator</Bundle-Activator>
-                        <Embed-Directory>WEB-INF/lib</Embed-Directory>
-                        <Bundle-ClassPath>.,WEB-INF/classes</Bundle-ClassPath>
-			<DynamicImport-Package>*</DynamicImport-Package>
+			            <DynamicImport-Package>*</DynamicImport-Package>
                         <Web-ContextPath>/camunda</Web-ContextPath>
                         <Webapp-Context>/camunda</Webapp-Context>
-                        <Embed-Dependency>*;scope=compile|runtime;</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
-                        <Import-Package>org.camunda.bpm.engine.impl.juel,!Acme.Serve,!org.junit,!org.apache.log,!com.sun.jdi.*,
-                            !org.codehaus.jackson.xc,org.camunda.bpm.engine,*
-                        </Import-Package>
+                        <Import-Package>!org.camunda.bpm.engine.rest.*,org.camunda.bpm.engine.*,javax.servlet,javax.servlet.http</Import-Package>
                     </instructions>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source>${project.basedir}/src/build/script/classpath-adder.groovy</source>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -262,11 +287,6 @@
                                 <exclude>WEB-INF/classes/logging.properties</exclude>
                             </excludes>
                         </overlay>
-                        <!--overlay>
-                            <excludes>
-                                <exclude>WEB-INF/lib/*</exclude>
-                            </excludes>
-                        </overlay-->
                     </overlays>
                 </configuration>
             </plugin>
