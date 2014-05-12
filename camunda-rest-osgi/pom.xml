@@ -113,13 +113,11 @@
                                     <groupId>org.camunda.bpm</groupId>
                                     <artifactId>camunda-engine-rest</artifactId>
                                     <version>${camunda-bpm.version}</version>
-                                    <type>war</type>
-                                    <overWrite>false</overWrite>
+                                    <classifier>classes</classifier>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/unpacked-classes</outputDirectory>
-                                    <includes>WEB-INF/classes/**/*.*</includes>
-                                    <excludes>
-
-                                    </excludes>
+                                    <includes>**/*.*</includes>
+                                    <excludes></excludes>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${project.build.directory}/unpacked-classes</outputDirectory>
@@ -143,7 +141,7 @@
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.build.directory}/unpacked-classes/WEB-INF/classes</directory>
+                                    <directory>${project.build.directory}/unpacked-classes/</directory>
                                     <filtering>false</filtering>
                                     <includes>
                                         <include>**/*.*</include>
